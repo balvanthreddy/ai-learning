@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Infra Career Dashboard</title>
+<style>
+:root{
+  --bg:#f6f7f9; --card:#ffffff; --ink:#1a2233; --muted:#5b6575;
+  --line:#e3e7ee; --accent:#2563eb; --accent-soft:#dbeafe; --good:#16a34a; --good-soft:#dcfce7;
+  --warn:#d97706; --chip:#eef1f6; --code:#f1f3f8;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#0f1420; --card:#171e2e; --ink:#e8ecf4; --muted:#9aa5b8; --line:#26304a;
+    --accent:#60a5fa; --accent-soft:#1e3a5f; --good:#4ade80; --good-soft:#14351f;
+    --warn:#fbbf24; --chip:#212a40; --code:#1c2436; }
+}
+:root[data-theme="dark"]{ --bg:#0f1420; --card:#171e2e; --ink:#e8ecf4; --muted:#9aa5b8; --line:#26304a;
+  --accent:#60a5fa; --accent-soft:#1e3a5f; --good:#4ade80; --good-soft:#14351f;
+  --warn:#fbbf24; --chip:#212a40; --code:#1c2436; }
+:root[data-theme="light"]{ --bg:#f6f7f9; --card:#ffffff; --ink:#1a2233; --muted:#5b6575; --line:#e3e7ee;
+  --accent:#2563eb; --accent-soft:#dbeafe; --good:#16a34a; --good-soft:#dcfce7;
+  --warn:#d97706; --chip:#eef1f6; --code:#f1f3f8; }
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;}
+.wrap{max-width:980px;margin:0 auto;padding:16px 14px 80px;}
+h1{font-size:1.35rem;margin:8px 0 2px}
+h2{font-size:1.1rem;margin:20px 0 10px}
+.sub{color:var(--muted);font-size:.88rem;margin-bottom:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px;}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;position:sticky;top:0;background:var(--bg);padding:10px 0;z-index:5;border-bottom:1px solid var(--line);}
+.tab{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:7px 14px;border-radius:999px;cursor:pointer;font-size:.88rem;font-weight:600;}
+.tab.active{background:var(--accent);border-color:var(--accent);color:#fff;}
+.weekchips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 14px}
+.wchip{border:1px solid var(--line);background:var(--card);color:var(--ink);min-width:38px;text-align:center;padding:6px 8px;border-radius:8px;cursor:pointer;font-size:.85rem;font-weight:600}
+.wchip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.wchip .pct{display:block;font-size:.62rem;font-weight:500;opacity:.75}
+.bar{height:8px;background:var(--chip);border-radius:99px;overflow:hidden;margin:6px 0 2px}
+.bar>i{display:block;height:100%;background:var(--good);border-radius:99px;transition:width .3s}
+.item{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}
+.item:first-of-type{border-top:none}
+.item input[type=checkbox]{width:20px;height:20px;margin-top:2px;accent-color:var(--good);flex:none;cursor:pointer}
+.item.done .t{ text-decoration:line-through; opacity:.6 }
+.t{font-weight:600}
+.d{color:var(--muted);font-size:.86rem;margin-top:2px}
+.daytag{display:inline-block;background:var(--chip);color:var(--muted);font-size:.7rem;font-weight:700;letter-spacing:.04em;padding:2px 8px;border-radius:6px;margin-bottom:4px;text-transform:uppercase}
+.links{margin-top:6px;display:flex;flex-wrap:wrap;gap:6px}
+.links a{display:inline-block;background:var(--accent-soft);color:var(--accent);text-decoration:none;font-size:.78rem;font-weight:600;padding:3px 10px;border-radius:999px}
+.links a:hover{filter:brightness(1.08)}
+.pill{display:inline-block;background:var(--good-soft);color:var(--good);font-size:.75rem;font-weight:700;padding:2px 10px;border-radius:999px}
+.goal{background:var(--accent-soft);border:none;border-radius:10px;padding:10px 14px;font-size:.9rem;margin-bottom:12px}
+.stat{display:flex;gap:12px;flex-wrap:wrap}
+.stat .card{flex:1;min-width:130px;text-align:center;margin:0}
+.big{font-size:1.7rem;font-weight:800}
+.qa .q{cursor:pointer;font-weight:600;display:flex;gap:8px;align-items:flex-start}
+.qa .q::before{content:"▸";color:var(--accent);flex:none;transition:transform .15s}
+.qa.open .q::before{transform:rotate(90deg)}
+.qa .a{display:none;color:var(--muted);font-size:.9rem;margin:8px 0 4px 18px;white-space:pre-line}
+.qa.open .a{display:block}
+.qa{padding:10px 0;border-top:1px solid var(--line)}
+.cat{margin-top:18px;font-size:.75rem;font-weight:800;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+.flash{max-width:520px;margin:0 auto;text-align:center}
+.fcard{background:var(--card);border:1px solid var(--line);border-radius:16px;min-height:210px;display:flex;align-items:center;justify-content:center;padding:24px;cursor:pointer;font-size:1.05rem;font-weight:600;user-select:none}
+.fcard .hint{position:absolute;bottom:10px;left:0;right:0;font-size:.7rem;color:var(--muted);font-weight:500}
+.fcard{position:relative}
+.fcard.back{background:var(--accent-soft);font-weight:500;font-size:.95rem}
+.fbtns{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 16px;border-radius:10px;cursor:pointer;font-weight:600;font-size:.85rem}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.good{background:var(--good);border-color:var(--good);color:#fff}
+.small{font-size:.78rem;color:var(--muted)}
+.reslist{columns:1;column-gap:24px}
+@media(min-width:700px){.reslist{columns:2}}
+.reslist .card{break-inside:avoid}
+.footerbar{margin-top:24px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.hidden{display:none !important}
+table{border-collapse:collapse;width:100%;font-size:.85rem}
+td,th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🚀 AI Infra Career Dashboard</h1>
+  <div class="sub">12-week plan · Agentic AIOps &amp; AI Platform Engineering · 15–20 hrs/week · progress saved in this browser</div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-tab="overview">Overview</button>
+    <button class="tab" data-tab="weekly">Weekly Plan</button>
+    <button class="tab" data-tab="interview">Interview Q&amp;A</button>
+    <button class="tab" data-tab="flash">Flashcards</button>
+    <button class="tab" data-tab="resources">All Links</button>
+  </div>
+
+  <div id="view-overview"></div>
+  <div id="view-weekly" class="hidden"></div>
+  <div id="view-interview" class="hidden"></div>
+  <div id="view-flash" class="hidden"></div>
+  <div id="view-resources" class="hidden"></div>
+
+  <div class="footerbar">
+    <button class="btn" id="exportBtn">⬇ Export progress</button>
+    <button class="btn" id="importBtn">⬆ Import progress</button>
+    <input type="file" id="importFile" accept=".json" class="hidden">
+    <button class="btn" id="resetBtn">Reset all</button>
+    <span class="small">Progress lives in this browser's storage. Export a JSON backup after big sessions (and drop it in the repo so Claude can read it).</span>
+  </div>
+</div>
+
+<script>
+/* ---------------- DATA ---------------- */
+const yt = q => "https://www.youtube.com/results?search_query=" + encodeURIComponent(q);
+
+const WEEKS = [
+{n:1, title:"LLM Fundamentals + Launch", month:1, goal:"Understand how LLMs actually work at an infra level, refresh modern K8s, get your portfolio and resume live, and send your first applications.",
+ deliverable:"All repos on GitHub with profile README · resume v2 sent to 5–10 bridge roles · LinkedIn headline updated",
+ days:[
+ {d:"Mon", t:"How LLMs work (infra view)", x:"Tokens, context windows, embeddings, why inference is memory-bound. Watch Karpathy's intro — the single best hour on this.", links:[["Karpathy: Intro to LLMs","https://www.youtube.com/watch?v=zjkBMFhNj_g"],["3Blue1Brown: What is a GPT?","https://www.youtube.com/watch?v=wjZofJX0v4M"]]},
+ {d:"Tue", t:"LLM economics & APIs", x:"Pricing per token, latency vs throughput, API vs self-hosted trade-offs. Skim Anthropic + Bedrock docs with an architect's eye.", links:[["Anthropic API docs","https://docs.anthropic.com/"],["Amazon Bedrock docs","https://docs.aws.amazon.com/bedrock/"]]},
+ {d:"Wed", t:"Modern K8s refresh", x:"Re-derive: deployments, services, HPA, requests/limits, node autoscaling. Then read what Karpenter changes about node provisioning.", links:[["K8s concepts","https://kubernetes.io/docs/concepts/"],["Karpenter docs","https://karpenter.sh/docs/"],["Killercoda free K8s labs","https://killercoda.com/kubernetes"]]},
+ {d:"Thu", t:"GitHub portfolio setup", x:"Create profile README, push local repos (ask Claude to help), add descriptions/topics/licenses, pin your 6 best.", links:[["Profile README guide","https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-github-profile/customizing-your-profile/managing-your-profile-readme"]]},
+ {d:"Fri", t:"Flashcards + 3 interview Qs", x:"Do the Week-1 flashcards in the Flashcards tab; answer 3 Qs from Interview tab out loud.", links:[]},
+ {d:"Sat", t:"BUILD: repo hygiene sprint", x:"4–6h: every repo gets a README with problem→architecture→quickstart, one Mermaid diagram, and CI stub. Resume v2 final (DevOps-with-AI variant).", links:[["Mermaid diagrams","https://mermaid.js.org/intro/"]]},
+ {d:"Sun", t:"PUBLISH + APPLY", x:"First LinkedIn post (\"7 yrs of DevOps, now building AI infra — following along\"). Apply to 5–10 bridge roles. Set up job tracker sheet.", links:[]}
+]},
+{n:2, title:"LLM Serving & Inference", month:1, goal:"Run models yourself — locally with Ollama, properly with vLLM — and understand batching, KV cache, quantization, and GPU memory math.",
+ deliverable:"llm-serving-bench: first published benchmark table (Ollama vs vLLM, 2 models, latency/throughput)",
+ days:[
+ {d:"Mon", t:"Ollama hands-on", x:"Install Ollama, pull llama3.2/qwen models, hit the local API, measure tokens/sec on your Mac.", links:[["Ollama","https://ollama.com/"],["Ollama API docs","https://github.com/ollama/ollama/blob/main/docs/api.md"]]},
+ {d:"Tue", t:"vLLM concepts", x:"Continuous batching, PagedAttention, KV cache. Read the docs 'serving' section — this vocabulary is interview gold.", links:[["vLLM docs","https://docs.vllm.ai/"],["vLLM explained","https://www.youtube.com/results?search_query=vllm+pagedattention+explained"]]},
+ {d:"Wed", t:"Quantization", x:"GGUF vs AWQ vs GPTQ, quality/latency trade-off, GPU memory math: params × bytes + KV cache. Compute what fits on a 24GB card.", links:[["HF quantization overview","https://huggingface.co/docs/transformers/main/en/quantization/overview"]]},
+ {d:"Thu", t:"GPU rental + vLLM deploy", x:"Rent a cheap GPU (RunPod/Lambda spot, ~$0.30–0.70/hr), run vLLM serving an 8B model, hit it with curl. Tear down after!", links:[["RunPod","https://www.runpod.io/"],["Lambda Cloud","https://lambdalabs.com/service/gpu-cloud"]]},
+ {d:"Fri", t:"Managed serving landscape", x:"Bedrock, Azure OpenAI, SageMaker endpoints — when to pick managed vs self-hosted. Flashcards + 3 Qs.", links:[["Azure OpenAI docs","https://learn.microsoft.com/en-us/azure/ai-services/openai/"]]},
+ {d:"Sat", t:"BUILD: llm-serving-bench v1", x:"Load-test Ollama vs vLLM with k6 or locust: latency p50/p95, throughput, cost/1M tokens. Publish results table in README.", links:[["k6 docs","https://grafana.com/docs/k6/latest/"],["locust","https://docs.locust.io/en/stable/"]]},
+ {d:"Sun", t:"PUBLISH + APPLY", x:"LinkedIn post: your benchmark table + one surprising number. 5–10 applications.", links:[]}
+]},
+{n:3, title:"RAG & Vector Databases", month:1, goal:"Build production-shaped retrieval: embeddings, chunking, hybrid search, reranking, and evaluation — applied to runbook-rag.",
+ deliverable:"runbook-rag v2: Qdrant/pgvector backend, ingestion pipeline, citations, 25-question eval set",
+ days:[
+ {d:"Mon", t:"Embeddings & similarity", x:"What embeddings encode, cosine similarity, embedding model choices. Generate embeddings and eyeball nearest neighbors.", links:[["Anthropic: embeddings","https://docs.anthropic.com/en/docs/build-with-claude/embeddings"],["Sentence-transformers","https://www.sbert.net/"]]},
+ {d:"Tue", t:"Vector DBs: pgvector + Qdrant", x:"Stand both up in Docker. Index 100 docs. Understand HNSW, filters, payload/metadata.", links:[["pgvector","https://github.com/pgvector/pgvector"],["Qdrant docs","https://qdrant.tech/documentation/"]]},
+ {d:"Wed", t:"Chunking & hybrid search", x:"Chunk sizes, overlap, metadata strategy; BM25 + vector hybrid; why naive chunking fails on runbooks (headers/steps).", links:[["Qdrant hybrid search","https://qdrant.tech/documentation/tutorials/hybrid-search-fastembed/"]]},
+ {d:"Thu", t:"RAG pipeline assembly", x:"Query → retrieve → rerank → prompt with citations → answer. Wire it into runbook-rag with FastAPI.", links:[["FastAPI","https://fastapi.tiangolo.com/"],["Reranking intro","https://www.youtube.com/results?search_query=reranking+rag+explained"]]},
+ {d:"Fri", t:"RAG evaluation", x:"Build a 25-question golden set from your runbooks. Score retrieval hit-rate and answer quality. Flashcards + 3 Qs.", links:[["promptfoo","https://www.promptfoo.dev/docs/intro/"]]},
+ {d:"Sat", t:"BUILD: runbook-rag v2", x:"Full ingestion pipeline (watch folder → chunk → embed → upsert), hybrid retrieval, cited answers, eval score in README, Dockerized.", links:[]},
+ {d:"Sun", t:"PUBLISH + APPLY", x:"Post: \"I gave my runbooks a brain — here's what broke first.\" 5–10 applications.", links:[]}
+]},
+{n:4, title:"LLMOps & Observability", month:1, goal:"Trace, evaluate, and cost-monitor LLM systems; stand up Prometheus + Grafana properly (the modern stack gap in your resume).",
+ deliverable:"tokenmeter live: Grafana dashboard of per-route token cost + budget alerts · Langfuse tracing on runbook-rag",
+ days:[
+ {d:"Mon", t:"Prometheus fundamentals", x:"Metric types, scraping, PromQL basics (rate, histogram_quantile). Run it in Docker, scrape node-exporter.", links:[["Prometheus overview","https://prometheus.io/docs/introduction/overview/"],["PromQL basics","https://prometheus.io/docs/prometheus/latest/querying/basics/"]]},
+ {d:"Tue", t:"Grafana dashboards + alerts", x:"Build a dashboard from your Prometheus data; Alertmanager routes; SLO thinking (burn rates).", links:[["Grafana docs","https://grafana.com/docs/grafana/latest/"],["Alertmanager","https://prometheus.io/docs/alerting/latest/alertmanager/"]]},
+ {d:"Wed", t:"LLM tracing with Langfuse", x:"Self-host Langfuse, instrument runbook-rag: traces, spans, token counts, cost per trace.", links:[["Langfuse docs","https://langfuse.com/docs"]]},
+ {d:"Thu", t:"Eval harnesses & prompt versioning", x:"promptfoo CI evals, prompt-as-config, regression testing prompts like code. OTel GenAI semantic conventions — skim.", links:[["promptfoo CI","https://www.promptfoo.dev/docs/integrations/github-action/"],["OTel GenAI conventions","https://opentelemetry.io/docs/specs/semconv/gen-ai/"]]},
+ {d:"Fri", t:"LLM cost model", x:"Cost per request = tokens × price; cache hits; batch vs stream. Design tokenmeter's metric schema. Flashcards + 3 Qs.", links:[]},
+ {d:"Sat", t:"BUILD: tokenmeter v1", x:"Middleware/proxy exporting token + cost metrics to Prometheus; Grafana dashboard (cost by route/model); budget alert rule. Screenshot in README.", links:[]},
+ {d:"Sun", t:"PUBLISH + APPLY + RETRO", x:"Post the dashboard screenshot. 5–10 applications. Month-1 retro: what % of items done?", links:[]}
+]},
+{n:5, title:"AIOps Foundations", month:2, goal:"Anomaly detection, alert correlation, and event-driven remediation patterns — the classical AIOps layer your agents will sit on.",
+ deliverable:"kube-triage v2: auto-collects evidence for 5 seeded K8s failures and produces ranked hypotheses",
+ days:[
+ {d:"Mon", t:"AIOps landscape", x:"What AIOps means in practice: noise reduction, correlation, RCA assist, auto-remediation. Survey what Datadog/PagerDuty ship as 'AI'.", links:[["Google SRE book (free)","https://sre.google/sre-book/table-of-contents/"]]},
+ {d:"Tue", t:"Anomaly detection on metrics", x:"Static thresholds vs baselines vs z-scores vs seasonality. Implement a simple baseline detector in Python over Prometheus data.", links:[["Prometheus HTTP API","https://prometheus.io/docs/prometheus/latest/querying/api/"]]},
+ {d:"Wed", t:"Alert pipelines", x:"Alertmanager → webhook → enrichment → dedupe/correlate. Build the webhook receiver you'll reuse in the flagship.", links:[["Alertmanager webhook","https://prometheus.io/docs/alerting/latest/configuration/#webhook_config"]]},
+ {d:"Thu", t:"K8s failure modes", x:"Seed and study: CrashLoopBackOff, OOMKilled, ImagePullBackOff, PVC pending, DNS failure. Script the evidence-collection commands.", links:[["Debug pods","https://kubernetes.io/docs/tasks/debug/debug-application/debug-pods/"]]},
+ {d:"Fri", t:"LLM log triage", x:"Feed collected evidence to Claude with a structured prompt → ranked hypotheses JSON. Flashcards + 3 Qs.", links:[["Structured outputs (tool use)","https://docs.anthropic.com/en/docs/build-with-claude/tool-use"]]},
+ {d:"Sat", t:"BUILD: kube-triage v2", x:"CLI: `kube-triage <namespace>` → collects events/logs/metrics → LLM hypotheses with confidence + next diagnostic step. Test on all 5 seeded failures; demo GIF.", links:[["vhs (terminal GIFs)","https://github.com/charmbracelet/vhs"]]},
+ {d:"Sun", t:"PUBLISH + APPLY", x:"Post the triage demo GIF. Start applying to AIOps-titled roles too. 5–10 applications.", links:[]}
+]},
+{n:6, title:"AI Agents from First Principles", month:2, goal:"Tool use, agent loops, MCP, and structured outputs — build a read-only infrastructure diagnosis agent before ever letting AI write.",
+ deliverable:"A working read-only 'infra diagnoser' agent with 3+ tools (kubectl, Prometheus query, log search) and full action logging",
+ days:[
+ {d:"Mon", t:"Building Effective Agents", x:"Read Anthropic's essay twice — workflows vs agents, when NOT to use agents. This framing wins interviews.", links:[["Building Effective Agents","https://www.anthropic.com/engineering/building-effective-agents"]]},
+ {d:"Tue", t:"Tool use / function calling", x:"Implement raw tool-use loop with the Claude API: define tools, execute, return results, iterate. No framework yet — understand the loop.", links:[["Claude tool use","https://docs.anthropic.com/en/docs/build-with-claude/tool-use"]]},
+ {d:"Wed", t:"MCP (Model Context Protocol)", x:"What MCP standardizes; build a tiny MCP server exposing one read-only infra tool.", links:[["MCP docs","https://modelcontextprotocol.io/"],["MCP quickstart","https://modelcontextprotocol.io/quickstart/server"]]},
+ {d:"Thu", t:"Agent frameworks survey", x:"LangGraph (graphs/state), when frameworks help vs hurt. Rebuild Tuesday's loop in LangGraph to compare.", links:[["LangGraph tutorials","https://langchain-ai.github.io/langgraph/tutorials/"]]},
+ {d:"Fri", t:"Agent safety patterns", x:"Read-only by default, allow-lists, approval gates, audit logs, timeouts, blast radius. Write your 'agent guardrails' doc — reuse in every interview. Flashcards + 3 Qs.", links:[]},
+ {d:"Sat", t:"BUILD: infra diagnoser agent", x:"Agent with kubectl-read, PromQL, and log-search tools; investigates 'why is service X unhealthy?'; logs every tool call; outputs structured diagnosis.", links:[]},
+ {d:"Sun", t:"PUBLISH + APPLY", x:"Post: \"I built an AI agent that debugs Kubernetes — read-only on purpose. Here's why.\" 5–10 applications.", links:[]}
+]},
+{n:7, title:"FLAGSHIP: Agentic Remediation", month:2, goal:"aiops-remediation-engine v2 — the full detect → diagnose → propose → approve → execute → verify loop with guardrails.",
+ deliverable:"End-to-end demo: seeded failure auto-detected, agent proposes fix, Slack approval, allow-listed execution, verification + incident report",
+ days:[
+ {d:"Mon", t:"Architecture design", x:"Draw the full flow: Prometheus → Alertmanager → orchestrator → diagnostic agent → proposal → approval gate → executor → verifier. Write docs/decisions.md.", links:[]},
+ {d:"Tue", t:"Approval gate", x:"Slack webhook (or CLI approve) with proposed action, evidence, blast-radius estimate; timeout = no action.", links:[["Slack incoming webhooks","https://api.slack.com/messaging/webhooks"]]},
+ {d:"Wed", t:"Allow-listed executor", x:"Executor only runs pre-approved verbs (restart deployment, scale, rollback, delete pod). Everything else → refuse + escalate.", links:[]},
+ {d:"Thu", t:"Verification loop", x:"After action: re-query metrics/probes, confirm recovery or rollback + escalate. Auto-generate the incident report (agent writes the post-mortem draft).", links:[]},
+ {d:"Fri", t:"Chaos test prep", x:"Seed failures with chaos tooling or scripts; dry-run the full loop. Flashcards + 3 Qs.", links:[["Chaos Mesh","https://chaos-mesh.org/docs/"]]},
+ {d:"Sat", t:"BUILD: full-loop demo", x:"Run the complete scenario end-to-end. Record 3-min video. Write the README like a product page.", links:[]},
+ {d:"Sun", t:"PUBLISH + APPLY", x:"Your biggest post yet: the demo video. Add F1 to resume (AIOps variant). 5–10 applications.", links:[]}
+]},
+{n:8, title:"Terraform + AI + Policy-as-Code", month:2, goal:"AI-assisted IaC review in CI with OPA policy gates and cost estimation; ArgoCD GitOps fundamentals.",
+ deliverable:"tf-risk-review v2: GitHub Action posting AI risk analysis + OPA verdicts + Infracost delta on every Terraform PR",
+ days:[
+ {d:"Mon", t:"terraform plan as data", x:"terraform show -json; what's in a plan; resource change taxonomy (create/update/destroy/replace).", links:[["TF JSON output","https://developer.hashicorp.com/terraform/internals/json-format"]]},
+ {d:"Tue", t:"OPA + Conftest", x:"Write 5 Rego policies: no public S3, no 0.0.0.0/0 ingress, mandatory tags, instance-type allow-list, no hardcoded secrets.", links:[["OPA docs","https://www.openpolicyagent.org/docs/latest/"],["Conftest","https://www.conftest.dev/"]]},
+ {d:"Wed", t:"AI risk narrative", x:"Prompt design: plan JSON → severity-ranked risk analysis (blast radius, security, availability). Structured output, deterministic sections.", links:[]},
+ {d:"Thu", t:"Cost gate + CI wiring", x:"Infracost diff in the same pipeline; GitHub Action posts one consolidated PR comment; critical severity blocks merge.", links:[["Infracost","https://www.infracost.io/docs/"],["GitHub Actions","https://docs.github.com/en/actions"]]},
+ {d:"Fri", t:"ArgoCD fundamentals", x:"Install ArgoCD on a local cluster (k3d/kind), deploy an app from Git, understand sync/health/drift. Flashcards + 3 Qs.", links:[["ArgoCD getting started","https://argo-cd.readthedocs.io/en/stable/getting_started/"]]},
+ {d:"Sat", t:"BUILD: tf-risk-review v2", x:"Full pipeline on a sample TF repo; screenshot the PR comment in README; document a real catch (seed a public S3 bucket).", links:[]},
+ {d:"Sun", t:"PUBLISH + APPLY + RETRO", x:"Post the PR-comment screenshot. Month-2 retro. 5–10 applications.", links:[]}
+]},
+{n:9, title:"Kubernetes for AI Workloads", month:3, goal:"GPU scheduling, model serving on K8s (vLLM/KServe), and autoscaling inference — ai-platform-k8s becomes your platform substrate.",
+ deliverable:"ai-platform-k8s: vLLM (or KServe) serving a model on K8s with HPA/KEDA autoscaling and Grafana dashboards",
+ days:[
+ {d:"Mon", t:"GPUs on K8s", x:"NVIDIA device plugin, resource requests for GPUs, time-slicing vs MIG (concepts), node pools/taints for GPU nodes.", links:[["NVIDIA device plugin","https://github.com/NVIDIA/k8s-device-plugin"],["K8s: schedule GPUs","https://kubernetes.io/docs/tasks/manage-gpus/scheduling-gpus/"]]},
+ {d:"Tue", t:"Model serving on K8s", x:"KServe architecture vs plain vLLM Deployment; when the extra machinery earns its keep.", links:[["KServe docs","https://kserve.github.io/website/"],["vLLM on K8s","https://docs.vllm.ai/en/latest/deployment/k8s.html"]]},
+ {d:"Wed", t:"Autoscaling inference", x:"HPA on custom metrics, KEDA scalers, queue-depth scaling; why CPU% is the wrong signal for LLMs.", links:[["KEDA","https://keda.sh/docs/"]]},
+ {d:"Thu", t:"Ray ecosystem (survey)", x:"Ray Serve / KubeRay — what it adds for multi-model serving. Survey-level; don't go deep.", links:[["Ray Serve","https://docs.ray.io/en/latest/serve/index.html"]]},
+ {d:"Fri", t:"Platform observability", x:"Wire serving metrics (TTFT, tokens/sec, queue depth) into Prometheus/Grafana. Flashcards + 3 Qs.", links:[]},
+ {d:"Sat", t:"BUILD: serving on K8s", x:"Deploy a small model (CPU inference locally is fine, or 1 GPU spot hour) behind a Service with autoscaling + dashboards. Screenshot everything, then tear down.", links:[]},
+ {d:"Sun", t:"PUBLISH + APPLY", x:"Post the architecture diagram. Apply to AI Infrastructure titles now. 5–10 applications.", links:[]}
+]},
+{n:10, title:"CI/CD & GitOps for AI Systems", month:3, goal:"Eval-gated deployment pipelines for models and prompts; ArgoCD-managed platform; MLflow registry fundamentals.",
+ deliverable:"git push → CI evals → ArgoCD deploys new model/prompt config → canary — demonstrated in ai-platform-k8s",
+ days:[
+ {d:"Mon", t:"What 'CD for AI' means", x:"Deployable units: model version, prompt version, RAG index, agent config. Each needs versioning + rollback.", links:[["MLflow docs","https://mlflow.org/docs/latest/index.html"]]},
+ {d:"Tue", t:"Eval gates in CI", x:"promptfoo suite as a merge gate; regression thresholds; golden datasets in the repo.", links:[["promptfoo GitHub Action","https://www.promptfoo.dev/docs/integrations/github-action/"]]},
+ {d:"Wed", t:"GitOps the platform", x:"Move ai-platform-k8s manifests into ArgoCD app-of-apps; config change = PR.", links:[["ArgoCD app-of-apps","https://argo-cd.readthedocs.io/en/stable/operator-manual/cluster-bootstrapping/"]]},
+ {d:"Thu", t:"Canary for models", x:"Traffic-split two model configs, compare quality/cost/latency dashboards, promote or rollback.", links:[["Argo Rollouts","https://argo-rollouts.readthedocs.io/en/stable/"]]},
+ {d:"Fri", t:"Model registry basics", x:"MLflow tracking + registry: log a model, stage transitions. Enough to speak MLOps. Flashcards + 3 Qs.", links:[]},
+ {d:"Sat", t:"BUILD: the pipeline", x:"End-to-end: PR changes prompt/model config → evals run → merge → ArgoCD syncs → canary → promote. Record it.", links:[]},
+ {d:"Sun", t:"PUBLISH + APPLY", x:"Post: \"CI/CD for LLMs is just CI/CD with different artifacts — mostly.\" 5–10 applications.", links:[]}
+]},
+{n:11, title:"AI Security, Governance & Cost", month:3, goal:"OWASP LLM Top 10, prompt-injection defense, agent identity/secrets, NIST AI RMF (your federal edge), and FinOps for AI.",
+ deliverable:"Security section in ai-platform-k8s mapping controls to OWASP LLM Top 10 + NIST AI RMF · gateway cost routing in multicloud-model-gateway",
+ days:[
+ {d:"Mon", t:"OWASP LLM Top 10", x:"Read all ten; for each, note which of YOUR projects is exposed and the mitigation.", links:[["OWASP GenAI Top 10","https://genai.owasp.org/llm-top-10/"]]},
+ {d:"Tue", t:"Prompt injection in practice", x:"Try to injection-attack your own runbook-rag (poisoned doc → exfil instruction). Then defend: input isolation, output constraints, tool allow-lists.", links:[["Simon Willison on prompt injection","https://simonwillison.net/series/prompt-injection/"]]},
+ {d:"Wed", t:"Secrets & identity for AI", x:"External Secrets Operator, per-agent service accounts, least-privilege tool creds, egress network policies.", links:[["External Secrets","https://external-secrets.io/"],["K8s network policies","https://kubernetes.io/docs/concepts/services-networking/network-policies/"]]},
+ {d:"Thu", t:"NIST AI RMF + responsible AI", x:"Skim the framework; map your platform's controls to it in a doc. Cleared AI roles eat this up.", links:[["NIST AI RMF","https://www.nist.gov/itl/ai-risk-management-framework"]]},
+ {d:"Fri", t:"FinOps for AI", x:"Cost drivers: model choice, caching, routing, batch. Design cost-aware routing rules for the gateway. Flashcards + 3 Qs.", links:[["LiteLLM (gateway patterns)","https://docs.litellm.ai/docs/"]]},
+ {d:"Sat", t:"BUILD: security + gateway", x:"Write SECURITY.md (OWASP/NIST mapping) for ai-platform-k8s; implement cost-aware routing + failover in multicloud-model-gateway with tokenmeter metrics.", links:[]},
+ {d:"Sun", t:"PUBLISH + APPLY", x:"Post: \"I attacked my own RAG system. It lost.\" 5–10 applications.", links:[]}
+]},
+{n:12, title:"Capstone Polish & Interview Blitz", month:3, goal:"Both flagships demo-ready, all resume variants final, system design reps, mock interviews — you now interview as an AI infra engineer.",
+ deliverable:"2 recorded flagship demos · 4 resume variants · 8 STAR stories written · 4 system-design scenarios practiced aloud",
+ days:[
+ {d:"Mon", t:"Flagship polish: F1", x:"aiops-remediation-engine: README as product page, demo video linked, decisions doc, issues roadmap.", links:[]},
+ {d:"Tue", t:"Flagship polish: F2", x:"ai-platform-k8s: architecture diagram, quickstart that actually works from scratch, SECURITY.md.", links:[]},
+ {d:"Wed", t:"System design reps", x:"Out loud, 25 min each: (1) internal LLM platform for 50 teams; (2) AIOps pipeline for 10k services. Record yourself.", links:[]},
+ {d:"Thu", t:"System design reps 2", x:"(3) RAG over 1M docs; (4) multi-region model serving with cost controls. Review Interview tab answers.", links:[]},
+ {d:"Fri", t:"Behavioral prep", x:"Write 8 STAR stories from CDC work (incident, migration, security, conflict, automation, failure, mentoring, ambiguity).", links:[]},
+ {d:"Sat", t:"BUILD: mock interview day", x:"Full mock loop: 1 system design + 1 K8s deep-dive + behavioral. Use a friend or record + self-review. Fix weakest area.", links:[]},
+ {d:"Sun", t:"PUBLISH + PLAN NEXT", x:"Post the 12-week retrospective (great content!). Update all resume variants. Plan months 4–6: CKA, GPU depth, open source. Keep applying.", links:[]}
+]}
+];
+
+const QA = [
+{c:"Kubernetes", q:"A pod is in CrashLoopBackOff. Walk me through your debugging process.", a:"1) kubectl describe pod — check events, exit code, restart count. Exit 137 = OOMKilled, 1 = app error. 2) kubectl logs --previous for the crashed container's output. 3) Check probes — a failing liveness probe restarts healthy-but-slow apps. 4) Check resources — limits too low? 5) Check config/secret mounts and image tag. Fix ranges from raising memory limits to fixing the probe timing to rolling back the image. Bonus: mention you built kube-triage to automate exactly this evidence collection."},
+{c:"Kubernetes", q:"How does Kubernetes schedule GPU workloads, and what's different about them?", a:"GPUs are extended resources exposed by the NVIDIA device plugin; pods request nvidia.com/gpu like CPU/memory but they're not overcommittable or divisible by default — one container gets the whole GPU unless you use time-slicing or MIG partitions. Typically GPU nodes carry taints so only GPU workloads land there, and autoscaling uses node pools (or Karpenter provisioners) since GPU nodes are expensive. Bin-packing matters: a 40GB model won't fit on a 24GB card — memory math drives instance choice."},
+{c:"Kubernetes", q:"HPA isn't scaling your LLM inference service even though users see latency. Why?", a:"HPA on CPU% is the wrong signal for LLM inference — GPU-bound services can show low CPU while queueing requests. The fix is scaling on the actual bottleneck signal: queue depth, in-flight requests, or tokens/sec via custom metrics (Prometheus adapter) or KEDA. Also mention scale-up lag: model loading takes minutes, so you need conservative scale-down and possibly warm pools."},
+{c:"Terraform", q:"Two engineers ran terraform apply simultaneously and state is corrupted. What now, and how do you prevent it?", a:"Now: stop all applies; state backups — S3 versioning lets you restore the last good state file; terraform state pull to inspect; reconcile drift with terraform plan and targeted imports/removals. Prevent: remote backend with state locking (S3+DynamoDB or Terraform Cloud), CI-only applies (humans open PRs, pipeline applies), and plan-file discipline (apply the reviewed plan artifact, not a fresh plan)."},
+{c:"Terraform", q:"How would you add AI review to a Terraform pipeline without letting it block engineers wrongly?", a:"Deterministic checks stay authoritative: OPA/Conftest policies and Infracost thresholds gate the merge. The LLM adds a risk narrative — blast radius, replacement warnings, security smells — as an advisory PR comment. Only well-defined severities (e.g., public S3, 0.0.0.0/0) block, and those come from policy code, not the model. This is exactly what tf-risk-review does: AI for judgment-shaped review, policy-as-code for enforcement."},
+{c:"LLM Infrastructure", q:"Explain why LLM inference is expensive and what continuous batching does about it.", a:"Inference is memory-bandwidth-bound: every generated token requires reading all model weights, and each sequence holds a KV cache that grows with context. Naive serving processes one request at a time, leaving the GPU idle between token steps. Continuous batching (vLLM) interleaves many sequences at the token level — new requests join the batch as others finish — keeping the GPU saturated. PagedAttention manages KV cache in non-contiguous blocks like virtual memory, cutting fragmentation and letting you fit more concurrent sequences."},
+{c:"LLM Infrastructure", q:"When do you self-host models vs use an API like Bedrock/Anthropic?", a:"API when: variable/low volume, need frontier quality, small team, compliance satisfied by provider terms. Self-host when: sustained high volume makes $/token cheaper on owned GPUs, strict data residency/air-gap (federal!), need latency control or fine-tuned/custom models. The honest answer includes TCO: self-hosting costs GPU time + engineering + on-call, so the break-even is higher than people think. Show your llm-serving-bench numbers — cost per 1M tokens both ways."},
+{c:"LLM Infrastructure", q:"How much GPU memory do you need to serve an 8B parameter model?", a:"Weights: 8B × 2 bytes (FP16) = 16GB; quantized to 4-bit ≈ 5GB. Plus KV cache: scales with batch size × context length × layers × heads — this is what actually eats memory under load, easily several GB with long contexts and concurrency. Plus activations/overhead ~10-20%. So FP16 needs a 24GB card minimum with modest batching; 4-bit fits on a 12GB card for light use. The follow-up trap: throughput needs headroom for KV cache, so 'it fits' ≠ 'it serves.'"},
+{c:"RAG & Vector DBs", q:"Your RAG system gives confident wrong answers. How do you debug and fix it?", a:"Decompose the failure: retrieval or generation? Check whether the right chunks were retrieved (log them). If retrieval failed: fix chunking (respect document structure), add hybrid search (BM25 + vector), add reranking, improve metadata filters. If retrieval succeeded but the answer's wrong: tighten the prompt (answer only from context, cite sources, say 'not found' when absent). Then build the eval set so regressions are caught in CI — without a golden dataset you're debugging blind."},
+{c:"RAG & Vector DBs", q:"pgvector vs a dedicated vector DB — how do you choose?", a:"pgvector when: you already run Postgres, corpus < a few million vectors, you want transactions/joins with relational data, and ops simplicity wins. Dedicated (Qdrant/Weaviate/Pinecone) when: larger scale, heavy filtering + hybrid search built-in, multi-tenancy, or vector search is the product's core. The senior answer: start with pgvector, measure recall/latency at your actual scale, and migrate only when numbers say so."},
+{c:"Agents & AIOps", q:"How do you stop an AI agent from taking down production?", a:"Layered guardrails: (1) read-only by default — diagnosis agents get zero write tools; (2) allow-listed actions — executor runs only pre-approved verbs (restart, scale, rollback), never arbitrary commands; (3) human approval gates for anything mutating, with evidence and blast-radius estimate attached; (4) scoped credentials — the agent's service account can't do more than its allow-list even if prompted to; (5) full audit log of every tool call; (6) timeouts and kill switch; (7) verification loop with auto-rollback. Built exactly this in aiops-remediation-engine."},
+{c:"Agents & AIOps", q:"When should something be an AI agent vs a plain script?", a:"If the runbook is deterministic — 'if disk >90%, clean /tmp' — write a script; an agent adds cost, latency, and failure modes for nothing. Agents earn their keep when the input is ambiguous and diagnosis requires correlating heterogeneous evidence: 'checkout latency is up' could be deploys, DB, upstream, or traffic shape. Pattern: agents for diagnosis and proposal (judgment), deterministic automation for execution (hands). That split is also your safety story."},
+{c:"Agents & AIOps", q:"What is MCP and why does it matter for infrastructure teams?", a:"Model Context Protocol — an open standard for connecting AI models to tools and data sources. Instead of every team hand-wiring bespoke tool integrations per app, you expose systems (Prometheus, kubectl, ticketing) as MCP servers once, and any MCP-capable client/agent can use them with consistent auth and schemas. For platform teams it's the paved road for agent-tool access: centralize the integration, control permissions server-side, audit uniformly."},
+{c:"Observability", q:"Design monitoring for an LLM-powered service. What's different from a normal service?", a:"Everything normal still applies (RED metrics, traces, SLOs) plus LLM-specific: token usage and cost per route/tenant, time-to-first-token vs total latency (streaming UX), queue depth and batch efficiency on the serving side, quality signals (eval scores, thumbs-down rate, guardrail trips), and prompt/model version as a metric label so you can correlate 'quality dropped' with 'prompt v14 shipped.' Langfuse/OTel GenAI conventions for traces; Prometheus/Grafana for the ops layer; budget alerts on spend."},
+{c:"Observability", q:"What's an SLO burn rate and why alert on it instead of raw error rate?", a:"Burn rate = how fast you're consuming the error budget relative to plan; burn rate 14 means you'd exhaust a 30-day budget in ~2 days. Alerting on burn rate (fast-burn: 1h window, slow-burn: 6h+) catches both sudden outages and slow degradation while ignoring noise that won't threaten the SLO. Raw-error-rate alerts either page too often on blips or too late on slow leaks."},
+{c:"System Design", q:"Design an internal LLM platform for 50 product teams.", a:"Structure the answer: (1) Requirements — multi-tenancy, cost attribution, model choice, security/compliance, self-serve. (2) Gateway layer — single OpenAI-compatible API, per-team keys, rate limits, routing across Bedrock/Azure/self-hosted vLLM, token metering per tenant. (3) Serving — managed APIs for frontier models; vLLM on GPU node pools for high-volume/sensitive; autoscale on queue depth. (4) RAG-as-a-service — shared ingestion, per-team collections. (5) Observability — Langfuse traces, Grafana cost dashboards, eval CI. (6) Security — secrets, egress control, OWASP LLM mitigations, audit. (7) Paved road — templates, SDK, GitOps deployment. This is literally your ai-platform-k8s + multicloud-model-gateway."},
+{c:"System Design", q:"Design an AIOps pipeline for a company with 10,000 microservices.", a:"(1) Signal layer: metrics/logs/traces already exist — the problem is 100k alerts/day. (2) Correlation: group by topology (service graph), time, and deploy events; dedupe to incidents. (3) Enrichment: attach runbooks (RAG), recent changes, ownership. (4) Diagnosis: LLM agent with read-only tools produces ranked hypotheses on the incident, not per alert — cost control via triage tiers (cheap model classifies, expensive model investigates P1s). (5) Remediation: allow-listed actions with approval gates, full audit. (6) Learning loop: post-incident data improves correlation rules and eval sets. Address scale (agent-per-incident, not per-alert), cost budgets, and failure of the AI layer itself (fallback = classic paging)."},
+{c:"Behavioral", q:"Tell me about a time you automated away a recurring operational problem.", a:"Use STAR with your Splunk log-forwarding Lambda story: Situation — recurring cloud ops incidents needing manual log triage at CDC; Task — reduce MTTR without adding headcount; Action — built Python Lambda automation for log forwarding and proactive remediation, later added foundation-model API integration for intelligent alert categorization and runbook generation; Result — eliminated manual intervention for recurring issues, measurably reduced MTTR. Close with what you'd do differently now (structured evals on the AI layer, approval gates)."},
+{c:"Behavioral", q:"Why are you moving from DevOps to AI infrastructure?", a:"Don't say 'pivoting.' Frame: 'I've automated cloud operations for 7 years — the job of making infrastructure reliable and self-healing hasn't changed, but the tooling has. LLM agents are the biggest upgrade to ops automation since IaC, so I rebuilt my toolkit around them: I've shipped an agentic remediation engine, a RAG runbook assistant, and an LLM serving platform on Kubernetes. Same mission, better tools — and my federal-grade security background matters more for AI systems, not less.'"}
+];
+
+const CARDS = [
+{f:"Token", b:"Smallest unit an LLM processes (~0.75 words in English). You're billed per token, context windows are measured in tokens, and throughput is tokens/sec."},
+{f:"Context window", b:"Max tokens a model can attend to per request (prompt + response). Bigger = more capable but slower and pricier; KV cache memory grows with it."},
+{f:"Embedding", b:"Dense vector representing text meaning. Similar meaning → nearby vectors. The foundation of semantic search and RAG retrieval."},
+{f:"KV cache", b:"Per-sequence memory storing attention keys/values so each new token doesn't recompute the whole sequence. The main GPU memory consumer under concurrent load."},
+{f:"Continuous batching", b:"vLLM's core trick: requests join/leave the batch at token granularity instead of waiting for the slowest sequence — massively improves GPU utilization."},
+{f:"PagedAttention", b:"vLLM's KV-cache manager: stores cache in non-contiguous fixed-size blocks (like OS virtual memory), cutting fragmentation and fitting more concurrent sequences."},
+{f:"Quantization", b:"Storing weights in fewer bits (4/8-bit vs FP16). 8B model: 16GB → ~5GB at 4-bit, with a small quality loss. Formats: GGUF, AWQ, GPTQ."},
+{f:"TTFT (time to first token)", b:"Latency until the first streamed token arrives — the UX-critical metric for chat. Total generation time matters less when streaming."},
+{f:"RAG", b:"Retrieval-Augmented Generation: retrieve relevant chunks from your corpus, stuff them into the prompt, generate a grounded, citable answer. Cheaper and fresher than fine-tuning."},
+{f:"Chunking", b:"Splitting documents for embedding. Bad chunking (mid-sentence, ignoring structure) is the #1 RAG quality killer. Respect headers, steps, semantic boundaries."},
+{f:"Hybrid search", b:"Combining keyword (BM25) and vector similarity scores. Catches exact terms (error codes, hostnames) that pure vector search misses."},
+{f:"Reranking", b:"Second-pass scoring of retrieved candidates with a stronger model to reorder by true relevance before prompting. Cheap accuracy boost."},
+{f:"HNSW", b:"Hierarchical Navigable Small World — the graph index most vector DBs use for fast approximate nearest-neighbor search. Trade-off: recall vs speed vs memory."},
+{f:"Tool use / function calling", b:"Model outputs a structured call to a tool you defined; your code executes it and returns results; model continues. The primitive underneath every agent."},
+{f:"Agent", b:"LLM in a loop with tools: observe → decide → act → observe. Use for ambiguous diagnosis; use plain scripts for deterministic work."},
+{f:"MCP", b:"Model Context Protocol — open standard for exposing tools/data to AI models via servers. Write the integration once; any MCP client can use it with uniform auth and audit."},
+{f:"Approval gate (HITL)", b:"Human-in-the-loop checkpoint: agent proposes a mutating action with evidence + blast radius; human approves/rejects; timeout = no action. Core agentic-ops safety pattern."},
+{f:"Allow-listed executor", b:"Execution layer that only runs pre-approved action types (restart, scale, rollback). The agent proposes; the executor constrains. Prompt injection can't add new verbs."},
+{f:"Prompt injection", b:"Malicious instructions smuggled into content the model processes (docs, logs, tickets). Defenses: isolate untrusted input, constrain outputs, tool allow-lists, least-privilege creds — assume it will happen."},
+{f:"OWASP LLM Top 10", b:"The standard threat list for LLM apps: prompt injection, insecure output handling, data poisoning, model DoS, excessive agency, etc. Know #1 (injection) and #8 (excessive agency) cold."},
+{f:"NIST AI RMF", b:"US framework for AI risk management: Govern / Map / Measure / Manage. The compliance language federal and enterprise AI programs speak — your cleared-role edge."},
+{f:"Langfuse", b:"Open-source LLM observability: traces every call with tokens, cost, latency, prompt version; supports evals and prompt management. The 'APM for LLM apps.'"},
+{f:"promptfoo", b:"Open-source eval harness: YAML-defined test cases scoring prompts/models/RAG; runs in CI so prompt changes are regression-tested like code."},
+{f:"Eval (golden dataset)", b:"Curated input→expected-output pairs scoring an LLM system's quality. Without evals you can't tell if a prompt/model change helped or broke things."},
+{f:"AIOps", b:"AI applied to IT operations: alert noise reduction, correlation, root-cause assist, auto-remediation. Value ladder: dedupe → correlate → diagnose → remediate."},
+{f:"Burn rate", b:"Speed of error-budget consumption vs plan. Burn rate 14 on a 30-day SLO ≈ budget gone in 2 days. Alert on fast+slow burn windows, not raw error rate."},
+{f:"Continuous batching vs static batching", b:"Static: wait, batch, run, drain — GPU idles. Continuous: sequences enter/exit per token step — GPU stays saturated. Why vLLM beats naive serving 5–10x on throughput."},
+{f:"KServe", b:"K8s-native model serving layer: InferenceService CRD, scale-to-zero, canary traffic splits, multi-framework. Use when you serve many models; plain vLLM Deployment when you serve one."},
+{f:"KEDA", b:"Kubernetes Event-Driven Autoscaler: scales on external signals (queue depth, Prometheus queries) — the right scaling signal for LLM inference, unlike CPU%."},
+{f:"Karpenter", b:"Node autoscaler that provisions right-sized instances directly from pod specs (vs fixed node groups). Key for expensive GPU capacity: fast provisioning, consolidation, spot handling."},
+{f:"MIG / time-slicing", b:"Ways to share a GPU: MIG hardware-partitions an A100/H100 into isolated slices; time-slicing software-shares without isolation. How you avoid wasting a $30k card on a small model."},
+{f:"ArgoCD", b:"GitOps controller: Git is the source of truth, ArgoCD continuously syncs cluster state to it, drift is visible and revertible. 'GitOps principles' on a resume without this = red flag."},
+{f:"OPA / Rego", b:"Open Policy Agent + its language: policy-as-code evaluating structured input (Terraform plans, K8s admission). Deterministic enforcement layer that AI review should sit beside, not replace."},
+{f:"Infracost", b:"CLI that prices a Terraform plan diff — 'this PR adds $340/mo.' Combine with OPA + AI narrative for a complete IaC review gate."},
+{f:"MLflow", b:"Experiment tracking + model registry: log runs, version models, stage transitions (staging→prod). The minimum MLOps vocabulary for AI-infra interviews."},
+{f:"Model gateway", b:"Single API fronting multiple LLM providers with routing, failover, rate limits, and per-tenant metering. The control point for cost, security, and reliability in enterprise AI."},
+{f:"Cost per 1M tokens", b:"The standard unit for comparing LLM serving options (API price vs GPU-hours ÷ throughput). Know rough current numbers for one frontier and one small model."},
+{f:"FinOps for AI", b:"Cost governance for AI workloads: per-tenant token metering, budget alerts, model routing by cost/quality, caching, batch APIs. tokenmeter is your proof."}
+];
+
+/* ---------------- STATE ---------------- */
+const KEY="ai-roadmap-progress-v1";
+let S={};
+try{ S=JSON.parse(localStorage.getItem(KEY))||{} }catch(e){ S={} }
+function save(){ localStorage.setItem(KEY,JSON.stringify(S)); }
+function isDone(id){ return !!S[id]; }
+function setDone(id,v){ if(v)S[id]=1;else delete S[id]; save(); refreshBars(); }
+
+/* ---------------- HELPERS ---------------- */
+function weekItems(w){ return w.days.map((d,i)=>`w${w.n}d${i}`); }
+function weekPct(w){ const ids=weekItems(w); const done=ids.filter(isDone).length; return Math.round(100*done/ids.length); }
+function allPct(){ let t=0,d=0; WEEKS.forEach(w=>{ t+=w.days.length; d+=weekItems(w).filter(isDone).length; }); return Math.round(100*d/t); }
+function linkHtml(links){ if(!links||!links.length)return ""; return `<div class="links">${links.map(l=>`<a href="${l[1]}" target="_blank" rel="noopener">${l[0]}</a>`).join("")}</div>`; }
+function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+
+/* ---------------- RENDER: OVERVIEW ---------------- */
+function renderOverview(){
+  const el=document.getElementById("view-overview");
+  const qaDone=QA.filter((_,i)=>isDone("qa"+i)).length;
+  const fcDone=CARDS.filter((_,i)=>isDone("fc"+i)).length;
+  let weekRows=WEEKS.map(w=>{
+    const p=weekPct(w);
+    return `<tr><td><b>W${w.n}</b></td><td>${w.title}</td><td style="min-width:110px"><div class="bar"><i style="width:${p}%"></i></div></td><td>${p}%</td></tr>`;
+  }).join("");
+  el.innerHTML=`
+  <div class="stat">
+    <div class="card"><div class="big" id="ovAll">${allPct()}%</div><div class="small">Curriculum done</div></div>
+    <div class="card"><div class="big">${qaDone}/${QA.length}</div><div class="small">Interview Qs practiced</div></div>
+    <div class="card"><div class="big">${fcDone}/${CARDS.length}</div><div class="small">Flashcards known</div></div>
+  </div>
+  <div class="card">
+    <h2 style="margin-top:0">🎯 The mission</h2>
+    <p><b>Agentic AIOps &amp; AI Platform Engineering</b> — AI agents that operate cloud infrastructure, built on your 7 years of federal-grade DevOps. Apply to bridge roles from week 2, AIOps/AI-infra titles from week 6.</p>
+    <p class="small">Positioning: "I build AI agents and platforms that operate cloud infrastructure — AIOps remediation, LLM serving on Kubernetes, AI-assisted IaC — with 7 years of federal-grade DevOps behind it."</p>
+  </div>
+  <div class="card">
+    <h2 style="margin-top:0">📅 12 weeks at a glance</h2>
+    <table>${weekRows}</table>
+  </div>
+  <div class="card">
+    <h2 style="margin-top:0">🔁 Weekly rhythm (15–20h)</h2>
+    <table>
+    <tr><td><b>Mon–Wed</b></td><td>Study + labs (1.5–2h/evening)</td></tr>
+    <tr><td><b>Thu</b></td><td>Apply topic to your project</td></tr>
+    <tr><td><b>Fri</b></td><td>Flashcards + 3 interview Qs</td></tr>
+    <tr><td><b>Sat</b></td><td>Build block (4–6h) — ship the week's milestone</td></tr>
+    <tr><td><b>Sun</b></td><td>Publish (LinkedIn) + apply to 5–10 jobs + plan</td></tr>
+    </table>
+  </div>`;
+}
+
+/* ---------------- RENDER: WEEKLY ---------------- */
+let curWeek = parseInt(S["_curWeek"]||1);
+function renderWeekly(){
+  const el=document.getElementById("view-weekly");
+  const chips=WEEKS.map(w=>`<button class="wchip ${w.n===curWeek?'active':''}" data-w="${w.n}">W${w.n}<span class="pct">${weekPct(w)}%</span></button>`).join("");
+  const w=WEEKS[curWeek-1];
+  const p=weekPct(w);
+  const days=w.days.map((d,i)=>{
+    const id=`w${w.n}d${i}`;
+    return `<div class="item ${isDone(id)?'done':''}" id="row-${id}">
+      <input type="checkbox" data-id="${id}" ${isDone(id)?'checked':''}>
+      <div><span class="daytag">${d.d}</span><div class="t">${esc(d.t)}</div><div class="d">${esc(d.x)}</div>${linkHtml(d.links)}</div>
+    </div>`;
+  }).join("");
+  const allLinks=w.days.flatMap(d=>d.links||[]);
+  const linksBlock = allLinks.length? `<div class="card"><h2 style="margin-top:0">🔗 All Week-${w.n} links in one place</h2><div class="links">${allLinks.map(l=>`<a href="${l[1]}" target="_blank" rel="noopener">${l[0]}</a>`).join("")}</div></div>`:"";
+  el.innerHTML=`
+  <div class="weekchips">${chips}</div>
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px">
+      <h2 style="margin:0">Week ${w.n} — ${esc(w.title)}</h2>
+      <span class="pill">Month ${w.month} · ${p}% done</span>
+    </div>
+    <div class="bar"><i style="width:${p}%"></i></div>
+  </div>
+  <div class="goal"><b>Goal:</b> ${esc(w.goal)}<br><b>Ship by Sunday:</b> ${esc(w.deliverable)}</div>
+  <div class="card">${days}</div>
+  ${linksBlock}
+  <div style="display:flex;justify-content:space-between;margin-top:10px">
+    <button class="btn" id="prevW" ${curWeek===1?'disabled':''}>← Week ${curWeek-1||''}</button>
+    <button class="btn primary" id="nextW" ${curWeek===12?'disabled':''}>Week ${curWeek+1<=12?curWeek+1:''} →</button>
+  </div>`;
+  el.querySelectorAll("input[type=checkbox]").forEach(cb=>cb.addEventListener("change",e=>{
+    setDone(e.target.dataset.id,e.target.checked);
+    document.getElementById("row-"+e.target.dataset.id).classList.toggle("done",e.target.checked);
+  }));
+  el.querySelectorAll(".wchip").forEach(c=>c.addEventListener("click",()=>{ curWeek=parseInt(c.dataset.w); S["_curWeek"]=curWeek; save(); renderWeekly(); }));
+  const pv=el.querySelector("#prevW"), nx=el.querySelector("#nextW");
+  if(pv)pv.addEventListener("click",()=>{ if(curWeek>1){curWeek--;S["_curWeek"]=curWeek;save();renderWeekly();window.scrollTo(0,0);} });
+  if(nx)nx.addEventListener("click",()=>{ if(curWeek<12){curWeek++;S["_curWeek"]=curWeek;save();renderWeekly();window.scrollTo(0,0);} });
+}
+
+/* ---------------- RENDER: INTERVIEW ---------------- */
+function renderInterview(){
+  const el=document.getElementById("view-interview");
+  let html=`<div class="sub" style="margin-top:12px">Click a question to reveal the answer. Check it off once you can answer it out loud without looking.</div>`;
+  let lastCat="";
+  QA.forEach((item,i)=>{
+    if(item.c!==lastCat){ html+=`<div class="cat">${item.c}</div>`; lastCat=item.c; }
+    const id="qa"+i;
+    html+=`<div class="qa" id="qa-${i}">
+      <div class="q">${esc(item.q)}<span style="margin-left:auto"><input type="checkbox" data-id="${id}" ${isDone(id)?'checked':''} title="I can answer this" style="width:18px;height:18px;accent-color:var(--good)"></span></div>
+      <div class="a">${esc(item.a)}</div>
+    </div>`;
+  });
+  el.innerHTML=`<div class="card">${html}</div>`;
+  el.querySelectorAll(".qa .q").forEach((q,i)=>q.addEventListener("click",e=>{
+    if(e.target.tagName==="INPUT")return;
+    document.getElementById("qa-"+i).classList.toggle("open");
+  }));
+  el.querySelectorAll("input[type=checkbox]").forEach(cb=>cb.addEventListener("change",e=>{ setDone(e.target.dataset.id,e.target.checked); renderOverview(); }));
+}
+
+/* ---------------- RENDER: FLASHCARDS ---------------- */
+let fcIdx=0, fcBack=false, fcOrder=CARDS.map((_,i)=>i);
+function renderFlash(){
+  const el=document.getElementById("view-flash");
+  const i=fcOrder[fcIdx];
+  const c=CARDS[i];
+  const known=isDone("fc"+i);
+  el.innerHTML=`
+  <div class="flash">
+    <div class="sub" style="margin-top:12px">Card ${fcIdx+1} / ${CARDS.length} · ${CARDS.filter((_,j)=>isDone("fc"+j)).length} marked known · tap card to flip</div>
+    <div class="fcard ${fcBack?'back':''}" id="fcard">
+      <div>${esc(fcBack? c.b : c.f)}</div>
+      <div class="hint">${fcBack?'answer — tap to see term':'term — tap to reveal'}</div>
+    </div>
+    <div class="fbtns">
+      <button class="btn" id="fcPrev">← Prev</button>
+      <button class="btn ${known?'good':''}" id="fcKnow">${known?'✓ Known':'Mark known'}</button>
+      <button class="btn" id="fcNext">Next →</button>
+    </div>
+    <div class="fbtns">
+      <button class="btn" id="fcShuffle">🔀 Shuffle</button>
+      <button class="btn" id="fcUnknown">Review unknown only</button>
+      <button class="btn" id="fcAll">All cards</button>
+    </div>
+  </div>`;
+  el.querySelector("#fcard").addEventListener("click",()=>{ fcBack=!fcBack; renderFlash(); });
+  el.querySelector("#fcPrev").addEventListener("click",()=>{ fcIdx=(fcIdx-1+fcOrder.length)%fcOrder.length; fcBack=false; renderFlash(); });
+  el.querySelector("#fcNext").addEventListener("click",()=>{ fcIdx=(fcIdx+1)%fcOrder.length; fcBack=false; renderFlash(); });
+  el.querySelector("#fcKnow").addEventListener("click",()=>{ setDone("fc"+i,!known); renderFlash(); renderOverview(); });
+  el.querySelector("#fcShuffle").addEventListener("click",()=>{ fcOrder.sort(()=>Math.random()-.5); fcIdx=0; fcBack=false; renderFlash(); });
+  el.querySelector("#fcUnknown").addEventListener("click",()=>{ const u=CARDS.map((_,j)=>j).filter(j=>!isDone("fc"+j)); if(u.length){fcOrder=u;fcIdx=0;fcBack=false;renderFlash();} });
+  el.querySelector("#fcAll").addEventListener("click",()=>{ fcOrder=CARDS.map((_,j)=>j); fcIdx=0; fcBack=false; renderFlash(); });
+}
+
+/* ---------------- RENDER: RESOURCES ---------------- */
+function renderResources(){
+  const el=document.getElementById("view-resources");
+  const blocks=WEEKS.map(w=>{
+    const links=w.days.flatMap(d=>d.links||[]);
+    if(!links.length)return "";
+    return `<div class="card"><b>W${w.n} · ${esc(w.title)}</b><div class="links" style="margin-top:8px">${links.map(l=>`<a href="${l[1]}" target="_blank" rel="noopener">${l[0]}</a>`).join("")}</div></div>`;
+  }).join("");
+  el.innerHTML=`<div class="sub" style="margin-top:12px">Every link in the curriculum, grouped by week.</div><div class="reslist">${blocks}</div>`;
+}
+
+/* ---------------- BARS/refresh ---------------- */
+function refreshBars(){ renderOverview(); const chips=document.querySelectorAll(".wchip"); chips.forEach(c=>{ const w=WEEKS[parseInt(c.dataset.w)-1]; c.querySelector(".pct").textContent=weekPct(w)+"%"; }); }
+
+/* ---------------- TABS ---------------- */
+const views={overview:renderOverview,weekly:renderWeekly,interview:renderInterview,flash:renderFlash,resources:renderResources};
+document.getElementById("tabs").addEventListener("click",e=>{
+  const b=e.target.closest(".tab"); if(!b)return;
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  b.classList.add("active");
+  Object.keys(views).forEach(k=>document.getElementById("view-"+k).classList.toggle("hidden",k!==b.dataset.tab));
+  views[b.dataset.tab]();
+});
+
+/* ---------------- EXPORT/IMPORT ---------------- */
+document.getElementById("exportBtn").addEventListener("click",()=>{
+  const blob=new Blob([JSON.stringify({exported:new Date().toISOString(),progress:S},null,2)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="ai-roadmap-progress.json"; a.click();
+});
+document.getElementById("importBtn").addEventListener("click",()=>document.getElementById("importFile").click());
+document.getElementById("importFile").addEventListener("change",e=>{
+  const f=e.target.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{ try{ const d=JSON.parse(r.result); S=d.progress||d; save(); location.reload(); }catch(err){ alert("Invalid file"); } };
+  r.readAsText(f);
+});
+document.getElementById("resetBtn").addEventListener("click",()=>{ if(confirm("Reset ALL progress?")){ S={}; save(); location.reload(); } });
+
+/* init */
+renderOverview(); renderWeekly(); renderInterview(); renderFlash(); renderResources();
+</script>
+</body>
+</html>
