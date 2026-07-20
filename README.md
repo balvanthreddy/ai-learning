@@ -9,15 +9,29 @@ flowchart LR
   M1["Month 1<br/>LLM Infra Core<br/>serving · RAG · LLMOps"] --> M2["Month 2<br/>Agentic AIOps<br/>agents · remediation · IaC gates"] --> M3["Month 3<br/>Production Platform<br/>K8s · GitOps · security · cost"]
 ```
 
+## Who this is for
+
+Cloud/DevOps/platform engineers who want to move into **AI infrastructure, AIOps, or AI platform engineering**. You should be comfortable with a cloud provider, Docker, and some Kubernetes/Terraform. No ML background needed — every hard AI concept is taught by analogy to ops concepts you already know. Details: [FAQ](FAQ.md).
+
+## How to take this course
+
+1. Do [SETUP.md](SETUP.md) (1–2 hrs, ~$10–30 total budget for all 12 weeks)
+2. Track progress on the [live dashboard](https://balvanthreddy.github.io/ai-learning/dashboard/) — daily topics, links, interview Q&A, flashcards; progress saves in your browser
+3. Follow [PROJECTS.md](PROJECTS.md) week by week — one shipped project every Saturday
+4. Write a short [journal](journal/) entry each Sunday and post it — learning in public is part of the method
+5. Stuck or improving something? [Discussions](../../discussions) and PRs welcome
+
 ## Quick links
 
 | Resource | Link |
 |---|---|
 | 📊 Progress dashboard (live) | [balvanthreddy.github.io/ai-learning/dashboard](https://balvanthreddy.github.io/ai-learning/dashboard/) |
-| 🗺 Full roadmap (career plan, 14 sections) | [ROADMAP.md](ROADMAP.md) |
+| ⚙️ Setup guide | [SETUP.md](SETUP.md) |
 | 🛠 Step-by-step project build guide | [PROJECTS.md](PROJECTS.md) |
+| 🗺 Career roadmap (resume, interviews, job search) | [ROADMAP.md](ROADMAP.md) |
 | 🚧 Project portfolio & status | [projects/](projects/) |
 | 📓 Weekly journal | [journal/](journal/) |
+| ❓ FAQ | [FAQ.md](FAQ.md) |
 
 ## Syllabus
 
@@ -36,6 +50,10 @@ flowchart LR
 | [11](PROJECTS.md#week-11--ai-security-governance--cost-routing) | AI security, governance & cost (OWASP LLM, NIST AI RMF) | Red-team doc + gateway cost routing |
 | [12](PROJECTS.md#week-12--capstone-polish--interview-blitz) | Capstone polish & interview prep | Both flagships public, demos recorded |
 
-## Background
+## The career track (optional)
 
-Senior Cloud DevOps Engineer — 7+ years on CDC mission-critical systems (AWS · Azure · GCP), Terraform, Kubernetes, CI/CD, observability. This curriculum applies that foundation to AI systems. Corrections and suggestions welcome — open an issue or PR.
+Unlike most AI courses, this one includes the job-hunt machinery: [ROADMAP.md](ROADMAP.md) has resume rewrites per target role, an interview prep plan (the dashboard bundles 19 Q&As and 38 flashcards), a LinkedIn strategy, and a job search playbook. Skip it if you're here just for the skills.
+
+## About
+
+Built and maintained by [Balvanth Reddy Gandra](https://github.com/balvanthreddy) — Senior Cloud DevOps Engineer, 7+ years on CDC mission-critical systems (AWS · Azure · GCP), taking this exact course in public. Corrections and suggestions welcome — open an issue or PR. [License: CC BY 4.0 / MIT](LICENSE.md).

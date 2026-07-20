@@ -2,6 +2,8 @@
 
 Companion to [ROADMAP.md](ROADMAP.md) and the [dashboard](https://balvanthreddy.github.io/ai-learning/dashboard/). One section per week: what you're building, why it matters, exact steps, explanations for the hard parts (marked 🧠), how to verify you're done, and common failures.
 
+> **Following along?** The named repos are my portfolio — create your own empty repos with the same names (or your own). Each week's section is a complete spec: architecture, steps, and a definition-of-done checklist that doubles as your homework. Do [SETUP.md](SETUP.md) first.
+
 **Conventions used throughout:**
 - All projects live in `~/Projects/devops-learning/<repo>/`.
 - Python projects: use `python3 -m venv .venv && source .venv/bin/activate` per repo.
